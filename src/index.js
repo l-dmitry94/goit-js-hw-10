@@ -25,10 +25,12 @@ fetchBreeds()
 refs.breedSelect.addEventListener('change', () => {
   const selectedBreed = refs.breedSelect.value;
 
-  fetchCatByBreed(selectedBreed).then(data => {
-    const catImg = data[0].url;
-    renderCatInfo(allBreeds, selectedBreed, catImg);
-  });
+  fetchCatByBreed(selectedBreed)
+    .then(data => {
+      const catImg = data[0].url;
+      renderCatInfo(allBreeds, selectedBreed, catImg);
+    })
+    .catch(error => console.log(error));
 });
 
 function renderCatInfo(cats, breed, catImg) {
@@ -51,23 +53,19 @@ function renderCatInfo(cats, breed, catImg) {
 }
 
 export function hideLoader() {
-  refs.loader.style.opacity = 0;
-  refs.loader.style.visibility = 'hidden';
+  refs.loader.classList.add('hidden');
 }
 
 export function showLoader() {
-  refs.loader.style.opacity = 1;
-  refs.loader.style.visibility = 'visible';
+  refs.loader.classList.remove('hidden');
 }
 
 export function hideError() {
-    refs.error.style.opacity = 0;
-    refs.error.style.visibility = 'hidden';
+  refs.error.classList.add('hidden');
 }
 
 export function showError() {
-    refs.error.style.opacity = 1;
-    refs.error.style.visibility = 'visible';
+  refs.error.classList.remove('hidden');
 }
 
 // new SlimSelect({
