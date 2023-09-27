@@ -43,6 +43,11 @@ h2 {
     z-index: 1;
 }
 
+.error {
+    color: #FF3D00;
+    font-weight: 700;
+}
+
 .hidden {
     display: none;
 }

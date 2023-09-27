@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { hideError, hideLoader, showError, showLoader } from './index';
+import { hideError, hideLoader, showError, showLoader, refs } from './index';
 
 axios.defaults.headers.common['x-api-key'] =
   'live_nxqY5arkN4nOHU5fGQPW6s3cKzzajEtEYQiPEEeYeiSNiHsZYsmEbhme5qUSQ2AK';
@@ -7,31 +7,35 @@ axios.defaults.headers.common['x-api-key'] =
 const BASE_URL = 'https://api.thecatapi.com/v1';
 
 export function fetchBreeds() {
+  refs.breedSelect.classList.remove("hidden");
   showLoader();
   hideError();
-  return axios.get(`${BASE_URL}/breeds123`).then(response => {
-    hideLoader();
-    if (response.status !== 200) {
+  return axios
+    .get(`${BASE_URL}/breeds`)
+    .then(response => {
+      hideLoader();
+      return response.data;
+    })
+    .catch(() => {
+      hideLoader();
+      refs.breedSelect.classList.add("hidden");
       showError();
-      throw new Error('Bad Request');
-    }
-    return response.data;
-  });
+    });
 }
 
 export function fetchCatByBreed(breedId) {
+  refs.breedSelect.classList.remove("hidden");
   showLoader();
   hideError();
   return axios
     .get(`${BASE_URL}/images/search?breed_ids=${breedId}`)
     .then(response => {
       hideLoader();
-      showError();
-      if (response.status !== 200) {
-        throw new Error('Bad Request');
-      }
       return response.data;
+    })
+    .catch(() => {
+      hideLoader();
+      refs.breedSelect.classList.add("hidden");
+      showError();
     });
 }
-
-

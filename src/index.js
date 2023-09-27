@@ -1,7 +1,7 @@
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
 import SlimSelect from 'slim-select';
 
-const refs = {
+export const refs = {
   breedSelect: document.querySelector('.breed-select'),
   catInfo: document.querySelector('.cat-info'),
   loader: document.querySelector('.overlay'),
@@ -20,7 +20,7 @@ fetchBreeds()
       .join('');
     refs.breedSelect.innerHTML = options;
   })
-  .catch(error => console.log(error));
+  .catch(() => showError());
 
 refs.breedSelect.addEventListener('change', () => {
   const selectedBreed = refs.breedSelect.value;
@@ -30,7 +30,7 @@ refs.breedSelect.addEventListener('change', () => {
       const catImg = data[0].url;
       renderCatInfo(allBreeds, selectedBreed, catImg);
     })
-    .catch(error => console.log(error));
+    .catch(() => showError());
 });
 
 function renderCatInfo(cats, breed, catImg) {
