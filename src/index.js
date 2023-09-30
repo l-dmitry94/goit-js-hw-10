@@ -1,73 +1,53 @@
-import { fetchBreeds, fetchCatByBreed } from './cat-api';
-import SlimSelect from 'slim-select';
-
-export const refs = {
-  breedSelect: document.querySelector('.breed-select'),
-  catInfo: document.querySelector('.cat-info'),
-  loader: document.querySelector('.overlay'),
-  error: document.querySelector('.error'),
-};
-
-const allBreeds = [];
+import { fetchBreeds, fetchCatByBreed, refs, showError } from './cat-api.js';
 
 fetchBreeds()
   .then(data => {
-    const options = data
+    const option = data
       .map(cat => {
-        allBreeds.push(cat);
         return `<option value="${cat.id}">${cat.name}</option>`;
       })
       .join('');
-    refs.breedSelect.innerHTML = options;
+
+    refs.select.innerHTML = option;
   })
   .catch(() => showError());
 
-refs.breedSelect.addEventListener('change', () => {
-  const selectedBreed = refs.breedSelect.value;
+refs.select.addEventListener('change', catInfo);
 
-  fetchCatByBreed(selectedBreed)
-    .then(data => {
-      const catImg = data[0].url;
-      renderCatInfo(allBreeds, selectedBreed, catImg);
+function catInfo() {
+  const selectedValue = refs.select.value;
+  const cat = {
+    catImg: '',
+    catTitle: '',
+    catDescr: '',
+    catTemp: '',
+  };
+
+  fetchCatByBreed(selectedValue)
+    .then(({ breeds, url }) => {
+      cat.catImg = url;
+      cat.catTitle = breeds[0].name;
+      cat.catDescr = breeds[0].description;
+      cat.catTemp = breeds[0].temperament;
+      refs.catInfo.innerHTML = createMarkup(cat);
     })
     .catch(() => showError());
-});
-
-function renderCatInfo(cats, breed, catImg) {
-  const markup = cats
-    .map(cat => {
-      if (breed === cat.id) {
-        return `
-        <img class="cat-img" src="${catImg}" alt="${cat.name}">
-        <div class="cat-info-block">
-          <h2 class="cat-title">${cat.name}</h2>
-          <p class="cat-descr">${cat.description}</p>
-          <p class="cat-temp"><b class="cat-temp-title">Temperament: </b>${cat.temperament}</p>
-        </div>
-        `;
-      }
-    })
-    .join('');
-
-  refs.catInfo.innerHTML = markup;
 }
 
-export function hideLoader() {
-  refs.loader.classList.add('hidden');
+function createMarkup({ catImg, catTitle, catDescr, catTemp }) {
+  return `
+    <img class="cat-img" src="${catImg}" alt="${catTitle}">
+    <div class="cat-info-block">
+      <h2 class="cat-title">${catTitle}</h2>
+      <p class="cat-descr">${catDescr}</p>
+      <p class="cat-temp">
+        <b class="cat-temp-title">Temperament: </b>
+        ${catTemp};
+      </p>
+    </div>
+    `;
 }
 
-export function showLoader() {
-  refs.loader.classList.remove('hidden');
-}
-
-export function hideError() {
-  refs.error.classList.add('hidden');
-}
-
-export function showError() {
-  refs.error.classList.remove('hidden');
-}
-
-// new SlimSelect({
-//   select: refs.breedSelect,
-// });
+new SlimSelect({
+  select: refs.select
+})

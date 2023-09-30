@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { hideError, hideLoader, showError, showLoader, refs } from './index';
+
+export const refs = {
+  select: document.querySelector('.breed-select'),
+  loader: document.querySelector('.loader'),
+  error: document.querySelector('.error'),
+  catInfo: document.querySelector('.cat-info'),
+};
+
 
 axios.defaults.headers.common['x-api-key'] =
   'live_nxqY5arkN4nOHU5fGQPW6s3cKzzajEtEYQiPEEeYeiSNiHsZYsmEbhme5qUSQ2AK';
@@ -7,7 +14,6 @@ axios.defaults.headers.common['x-api-key'] =
 const BASE_URL = 'https://api.thecatapi.com/v1';
 
 export function fetchBreeds() {
-  refs.breedSelect.classList.remove("hidden");
   showLoader();
   hideError();
   return axios
@@ -17,25 +23,38 @@ export function fetchBreeds() {
       return response.data;
     })
     .catch(() => {
-      hideLoader();
-      refs.breedSelect.classList.add("hidden");
       showError();
+      hideLoader();
     });
 }
 
 export function fetchCatByBreed(breedId) {
-  refs.breedSelect.classList.remove("hidden");
   showLoader();
   hideError();
   return axios
     .get(`${BASE_URL}/images/search?breed_ids=${breedId}`)
     .then(response => {
       hideLoader();
-      return response.data;
+      return response.data[0];
     })
     .catch(() => {
-      hideLoader();
-      refs.breedSelect.classList.add("hidden");
       showError();
+      hideLoader();
     });
+}
+
+export function hideError() {
+  refs.error.hidden = true;
+}
+
+export function showError() {
+  refs.error.hidden = false;
+}
+
+function hideLoader() {
+  refs.loader.hidden = true;
+}
+
+function showLoader() {
+  refs.loader.hidden = false;
 }
